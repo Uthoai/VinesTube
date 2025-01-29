@@ -1,0 +1,16 @@
+{
+  "name": "vinestube_backend",
+  "version": "1.0.0",
+  "description": "a backend for video watch and share",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vines",
+    "tube",
+    "vinestube"
+  ],
+  "author": "Uthoai Marma",
+  "license": "ISC"
+}
