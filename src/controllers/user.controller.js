@@ -19,7 +19,7 @@ import {ApiResponse} from "../utils/ApiResponse.js";
 const registerUser = asyneHandler( async(req, res)=>{ 
     
     const {fullName, email, username, password} = req.body
-    console.log("User data:", fullName, email, username, password );
+    //console.log("User data:", fullName, email, username, password );
     
     // check all field is empty or not
     if (
@@ -28,12 +28,7 @@ const registerUser = asyneHandler( async(req, res)=>{
         throw new ApiError(400, "All fields are required");  
     }
 
-    // Regular expression for validating email format
-    //const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    //if (!emailRegex.test(email)) {
-    //    throw new ApiError(400, "Invalid email format");
-    //}
+    // Validating email format
     if (!validator.isEmail(email)) {
         throw new ApiError(400, "Invalid email format");
     }
@@ -47,15 +42,24 @@ const registerUser = asyneHandler( async(req, res)=>{
     const existedUser = await User.findOne({
         $or: [{username}, {email}]
     })
-    console.log("existedUser: ", existedUser);
+    //console.log("existedUser: ", existedUser);
     
     if (existedUser) {
         throw new ApiError(409, "email /username already used.");
     }
 
+    //console.log(req.files); // just check
+    
     // check avater image path is empty or not
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverLocalPath =req.files?.coverImage[0]?.path;
+    //const coverLocalPath =req.files?.coverImage[0]?.path;
+
+    //console.log(avatarLocalPath);  // just check
+
+    let coverLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverLocalPath = req.files.coverImage[0].path
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400,"avater is required.")
@@ -78,6 +82,7 @@ const registerUser = asyneHandler( async(req, res)=>{
         password: password,
     })
 
+    // Avoid -password -refreshToken to response
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
