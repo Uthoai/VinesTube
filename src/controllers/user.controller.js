@@ -44,7 +44,7 @@ const registerUser = asyneHandler( async(req, res)=>{
     }
 
     // check user is exist or not
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{username}, {email}]
     })
     console.log("existedUser: ", existedUser);
@@ -68,6 +68,7 @@ const registerUser = asyneHandler( async(req, res)=>{
         throw new ApiError(400,"avater is required.")
     }
 
+    // create user
     const user = await User.create({
         fullName: fullName,
         avatar: avatar.url,

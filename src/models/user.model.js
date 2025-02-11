@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 const userSchema = new mongoose.Schema(
     {
         username: {
-            Types: String,
+            type: String,
             required: true,
             unique: true,
             lowercase: true,
@@ -13,41 +13,41 @@ const userSchema = new mongoose.Schema(
             index: true
         },
         email: {
-            Types: String,
+            type: String,
             required: true,
             unique: true,
             lowercase: true,
             trim: true,
         },
         fullName: {
-            Types: String,
+            type: String,
             required: true,
             trim: true,
             index: true
         },
         avatar: {
-            Types: String,
+            type: String,
             required: true
         },
         coverImage: {
-            Types: String
+            type: String
         },
         watchHistory: [
             {
-                Types: Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: "Video"
             }
         ],
         password: {
-            Types: String,
+            type: String,
             required: true,
         },
         refreshToken: {
-            Types: String
+            type: String
         },
     },
     {
-        timeseries: true
+        timestamps: true
     }
 );
 
