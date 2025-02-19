@@ -223,18 +223,25 @@ const refreshAccessToken = asyneHandler( async (req, res) => {
     try {
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
     
-        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+        const user = await User.findById(decodedToken?._id).select("-password")
     
         if (!user) {
             throw new ApiError(401, "Invalid refresh token");
         }
     
+        console.log(user);
+        
+        console.log(incomingRefreshToken);
+        console.log("DB User RefreshToken: ",user?.refreshToken);
+        
+        
+
         if (incomingRefreshToken !== user?.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
         }
     
         // generate new access and refresh token
-        const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
+        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     
         const options = {
             httpOnly: true,
@@ -243,12 +250,12 @@ const refreshAccessToken = asyneHandler( async (req, res) => {
     
         return res.status(200)
         .cookie("accessToken", accessToken, options)    
-        .cookie("refreshToken", newRefreshToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(
                 200, 
                 {
-                    accessToken, newRefreshToken
+                    accessToken, refreshToken
                 },
                 "Access token refreshed"
             )
