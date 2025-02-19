@@ -2,7 +2,7 @@ import {asyneHandler} from "../utils/asyneHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import validator from 'validator';
-import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import {uploadOnCloudinary, deleteFromCloudinary} from "../utils/cloudinary.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
@@ -304,9 +304,10 @@ const updateAccountDetails = asyneHandler( async (req, res) => {
                 fullName: fullName,
                 email: email
             }
+            // set is mongodb operator 
         },
         {
-            new: true
+            new: true   // this is for when update is complete object will return 
         }
     ).select("-password")
 
@@ -318,7 +319,45 @@ const updateAccountDetails = asyneHandler( async (req, res) => {
     ))
 })
 
+// update user avatar
+const updateUserAvatar = asyneHandler(async (req, res) => {
+    const avatarLocalPath = req.file?.path
 
+    if (!avatarLocalPath) {
+        throw new ApiError(400,"Avatar file is missing.")
+    }
+
+    // Delete old avatar from Cloudinary if it exists
+    if (req.user.avatar) {
+        const publicId = req.user.avatar.split('/').pop().split('.')[0];
+        await deleteFromCloudinary(publicId); 
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (!avatar.url) {
+        throw new ApiError(400,"Error while uploading on avatar")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set:{
+                avatar: avatar.url
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res.status(200)
+    .json(new ApiResponse(
+        200,
+        user,
+        "avater update successfully."
+    ))
+})
 
 
 export {
@@ -328,7 +367,8 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
-    updateAccountDetails
+    updateAccountDetails,
+    updateUserAvatar
 }
 
 

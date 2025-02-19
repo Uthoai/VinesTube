@@ -6,7 +6,8 @@ import {
     refreshAccessToken, 
     changeCurrentPassword,
     getCurrentUser,
-    updateAccountDetails
+    updateAccountDetails,
+    updateUserAvatar
 } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import { verityJWT } from "../middlewares/auth.middleware.js";
@@ -35,6 +36,7 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(verityJWT, changeCurrentPassword);
 router.route("/current-user").post(verityJWT, getCurrentUser);
 router.route("/update-account").post(verityJWT, updateAccountDetails);
+router.route("/update-avatar").patch(verityJWT, upload.single("avatar"), updateUserAvatar);
 
 
 export default router
