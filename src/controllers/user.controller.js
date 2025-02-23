@@ -376,7 +376,7 @@ const updateUserCoverImage = asyneHandler(async (req, res) => {
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if (!coverImage.url) {
-        throw new ApiError(400,"Error while uploading on avatar")
+        throw new ApiError(400,"Error while uploading on coverImage")
     }
 
     const user = await User.findByIdAndUpdate(
