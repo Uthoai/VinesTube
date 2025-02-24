@@ -3,7 +3,7 @@ import { asyneHandler } from "../utils/asyneHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
-export const verityJWT = asyneHandler( async (req, _, next) => {
+export const verifyJWT = asyneHandler( async (req, _, next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
         
